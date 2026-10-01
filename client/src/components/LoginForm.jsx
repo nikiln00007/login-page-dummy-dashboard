@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 // ── Inline SVG Icons ──────────────────────────────────────────────────────────
 const EyeIcon = () => (
@@ -188,6 +189,40 @@ const LoginForm = () => {
     }
   };
 
+  const handleGoogleSuccess = (credentialResponse) => {
+    try {
+      if (credentialResponse.credential) {
+        // Base64Url decode JWT payload
+        const base64Url = credentialResponse.credential.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+        const profile = JSON.parse(jsonPayload);
+        const user = {
+          name: profile.name || "Google User",
+          email: profile.email,
+          picture: profile.picture,
+        };
+
+        localStorage.setItem("orbitly_token", credentialResponse.credential);
+        localStorage.setItem("orbitly_user", JSON.stringify(user));
+        localStorage.setItem("orbitly_email", user.email);
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      console.error("Google login decode error:", err);
+      setError("Failed to process Google login response.");
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Google Sign-In failed or was cancelled.");
+  };
+
   return (
     <div style={styles.root}>
       {/* ── Card ── */}
@@ -284,23 +319,14 @@ const LoginForm = () => {
               <span style={styles.dividerLine} />
             </div>
 
-            {/* Social Buttons */}
-            <div style={styles.socialRow}>
-              <button
-                style={styles.socialBtn}
-                onClick={e => e.preventDefault()}
-                aria-label="Log in with Google"
-              >
-                <GoogleIcon />
-              </button>
-              <button
-                style={styles.socialBtn}
-                onClick={e => e.preventDefault()}
-                aria-label="Log in with Microsoft"
-              >
-                <MicrosoftIcon />
-              </button>
+            {/* Google Sign In */}
+            <div style={styles.googleContainer}>
+              <GoogleLoginButton
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+              />
             </div>
+
 
             {/* Forgot */}
             <a
@@ -457,6 +483,12 @@ const styles = {
     fontSize: 12,
     color: "#999",
     whiteSpace: "nowrap",
+  },
+  googleContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: 20,
+    width: "100%",
   },
   socialRow: {
     display: "flex",
