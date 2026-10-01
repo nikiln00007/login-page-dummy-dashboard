@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-green-forest: #2d5a27;
+  --color-green-dark: #1e3d1a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", "Poppins", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Input focus */
+input:focus {
+  outline: none;
+  border-color: #2d5a27 !important;
+  box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.12);
+}
+
+/* Submit button hover */
+#login-submit:hover:not(:disabled) {
+  background: #1e3d1a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(45, 90, 39, 0.35);
+}
+
+/* Social button hover */
+button[aria-label*="Log in with"]:hover {
+  border-color: #2d5a27 !important;
+  box-shadow: 0 2px 10px rgba(45, 90, 39, 0.15) !important;
+}
+
+/* Forgot link hover */
+a:hover {
+  text-decoration: underline;
+}
+
+/* Spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Card slide-in */
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.97) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 640px) {
+  /* illustration hides on mobile */
+}
